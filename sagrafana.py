@@ -21,8 +21,19 @@ class SaGrafana(BotPlugin):
   @botcmd(template="grafana_dashboards_list")
   @arg_botcmd('filter_tag', type=str)
   def grafana_dashboards(self, filter_tag=None):
-    # if you send it !grafana dashboards --tag Bot
+    """List of dashboards with optional tag"""
     helper = GrafanaHelper(grafana_server_address=self.config['server_address'],
                            grafana_token=self.config['token'])
     result = helper.get_dashboards(tag=filter_tag)
     return {'dashboards': result}
+
+  @botcmd
+  def status(self):
+    """Say hello to the world"""
+    helper = GrafanaHelper(grafana_server_address=self.config['server_address'],
+                           grafana_token=self.config['token'])
+    try:
+      result = helper.get_dashboards()
+      return "Seems alive"
+     except Exception as err:
+      return "Oops: {0}".format(err)
