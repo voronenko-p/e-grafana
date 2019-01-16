@@ -19,7 +19,7 @@ class SaGrafana(BotPlugin):
             'token': 'eyJrIjoicmNveFpac0tBZm81YzFrMDRNdWVQelRaN3VEOG5tblMiLCJuIjoiZS1ncmFmYW5hIiwiaWQiOjF9'}
 
   @botcmd(template="grafana_dashboards_list")
-  def grafana_dashboards(self):
+  def grafana_dashboards(self, mess, args):
     """List of dashboards with optional tag"""
     helper = GrafanaHelper(grafana_server_address=self.config['server_address'],
                            grafana_token=self.config['token'])
@@ -27,7 +27,7 @@ class SaGrafana(BotPlugin):
     return {'dashboards': result}
 
   @botcmd
-  def grafana_status(self):
+  def grafana_status(self, mess, args):
     """Say hello to the world"""
     helper = GrafanaHelper(grafana_server_address=self.config['server_address'],
                            grafana_token=self.config['token'])
