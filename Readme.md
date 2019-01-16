@@ -1,0 +1,1 @@
+curl -H "Authorization: Bearer eyJrIjoiQURsQ2VRUDBOWWRlNVMzbElkajg2Z0ZVd3oxSlZhTkEiLCJuIjoiZS1ncmFmYW5hIiwiaWQiOjF9" http://10.9.0.138/grafana/api/dashboards/home
