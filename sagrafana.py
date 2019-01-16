@@ -33,6 +33,6 @@ class SaGrafana(BotPlugin):
                            grafana_token=self.config['token'])
     try:
         result = helper.get_dashboards()
-        return "Seems alive - {0} dashboards found".format(len(result))
+        return "Seems alive - {0} dashboards found {1}".format(len(result), result)
     except Exception as err:
         return "Oops: {0}".format(err)
