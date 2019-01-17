@@ -11,12 +11,18 @@ class GrafanaHelper(object):
 
   def get_dashboards(self, tag=None):
     if tag is not None:
-      return self.call_grafana("search?type=dash-db&tag={0".format(tag))
+      result = self.call_grafana("search?type=dash-db&tag={0}".format(tag))
     else:
-      return self.call_grafana("search?type=dash-db")
+      result = self.call_grafana("search?type=dash-db")
+    return result
+
+  def get_dashboard_details(self, slug):
+    result = self.call_grafana("dashboards/db/{0}".format(slug))
+    return result
 
   def search_dashboards(self, query):
-      return self.call_grafana("search?type=dash-db&query={0".format(query))
+    result = self.call_grafana("search?type=dash-db&query={0}".format(query))
+    return result
 
   def pretty_dashboards(self, response):
     with open('templates/grafana/grafana_dashboards_list.md') as file_:

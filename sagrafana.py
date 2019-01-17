@@ -20,15 +20,39 @@ class SaGrafana(BotPlugin):
 
   @botcmd(template="grafana_dashboards_list")
   def grafana_dashboards(self, mess, args):
-    """List of dashboards with optional tag"""
+    """List of dashboards"""
     helper = GrafanaHelper(grafana_server_address=self.config['server_address'],
                            grafana_token=self.config['token'])
     result = helper.get_dashboards()
     return {'dashboards': result}
 
+  @botcmd(template="grafana_dashboards_list")
+  def grafana_dashboards_bytag(self, mess, args):
+    """List of dashboards by tag"""
+    helper = GrafanaHelper(grafana_server_address=self.config['server_address'],
+                           grafana_token=self.config['token'])
+    result = helper.get_dashboards(tag=mess)
+    return {'dashboards': result}
+
+  @botcmd(template="grafana_dashboards_list")
+  def grafana_dashboards_query(self, mess, args):
+    """Fuzzy find dashboard by string"""
+    helper = GrafanaHelper(grafana_server_address=self.config['server_address'],
+                           grafana_token=self.config['token'])
+    result = helper.search_dashboards(query=mess)
+    return {'dashboards': result}
+
+  @botcmd(template="grafana_debug")
+  def grafana_dashboard(self, mess, args):
+    """Fuzzy find dashboard by string"""
+    helper = GrafanaHelper(grafana_server_address=self.config['server_address'],
+                           grafana_token=self.config['token'])
+    result = helper.get_dashboard_details(slug=mess)
+    return {'result': result}
+
   @botcmd
   def grafana_status(self, mess, args):
-    """Say hello to the world"""
+    """Check aliveness of solution"""
     helper = GrafanaHelper(grafana_server_address=self.config['server_address'],
                            grafana_token=self.config['token'])
     try:
