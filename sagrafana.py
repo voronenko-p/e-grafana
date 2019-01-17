@@ -19,7 +19,7 @@ class SaGrafana(BotPlugin):
             'token': 'eyJrIjoicmNveFpac0tBZm81YzFrMDRNdWVQelRaN3VEOG5tblMiLCJuIjoiZS1ncmFmYW5hIiwiaWQiOjF9'}
 
   @botcmd(template="grafana_dashboards_list")
-  def grafana_dashboards(self, mess, args):
+  def grafana_dashboards_list(self, mess, args):
     """List of dashboards"""
     helper = GrafanaHelper(grafana_server_address=self.config['server_address'],
                            grafana_token=self.config['token'])
