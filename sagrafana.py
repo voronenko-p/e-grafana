@@ -31,6 +31,7 @@ class SaGrafana(BotPlugin):
     """List of dashboards by tag"""
     helper = GrafanaHelper(grafana_server_address=self.config['server_address'],
                            grafana_token=self.config['token'])
+    self.log.info("sagrafana:  Getting dashboards for tag %s" % mess)
     result = helper.get_dashboards(tag=mess)
     return {'dashboards': result}
 
