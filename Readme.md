@@ -26,7 +26,7 @@ Seems alive - 17 dashboards found
 `!grafana dashboards bytag cloudwatch`
 
 ```
-TODO
+{'dashboards': [{'id': 1, 'uid': '2Bv_gM4mk', 'title': 'AWS EC2', 'uri': 'db/aws-ec2', 'url': '/grafana/d/2Bv_gM4mk/aws-ec2', 'type': 'dash-db', 'tags': ['cloudwatch', 'monitoringartist'], 'isStarred': False}]}
 ```
 
 `!grafana dashboards query AWS`

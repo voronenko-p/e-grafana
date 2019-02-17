@@ -39,12 +39,13 @@ class SaGrafana(BotPlugin):
         return {'dashboards': result}
 
     @botcmd(template="grafana_dashboards_list")
-    def grafana_dashboards_query(self, mess, args):
+    @arg_botcmd('query', type=str)  # bytag
+    def grafana_dashboards_query(self, mess, query):
         """Fuzzy find dashboard by string"""
         helper = GrafanaHelper(
             grafana_server_address=self.config['server_address'],
             grafana_token=self.config['token'])
-        result = helper.search_dashboards(query=mess)
+        result = helper.search_dashboards(query=query)
         return {'dashboards': result}
 
     @botcmd(template="grafana_debug")
