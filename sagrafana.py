@@ -35,7 +35,7 @@ class SaGrafana(BotPlugin):
             grafana_server_address=self.config['server_address'],
             grafana_token=self.config['token'])
         self.log.info("sagrafana:  Getting dashboards for tag %s" % tag)
-        result = helper.get_dashboards(tag=mess)
+        result = helper.get_dashboards(tag=tag)
         return {'dashboards': result}
 
     @botcmd(template="grafana_dashboards_list")
