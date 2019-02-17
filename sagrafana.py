@@ -48,14 +48,24 @@ class SaGrafana(BotPlugin):
         result = helper.search_dashboards(query=query)
         return {'dashboards': result}
 
-    @botcmd(template="grafana_debug")
-    def grafana_dashboard(self, mess, args):
-        """Fuzzy find dashboard by string"""
+    # @botcmd(template="grafana_debug")
+    # def grafana_dashboard(self, mess, args):
+    #     """Fuzzy find dashboard by string"""
+    #     helper = GrafanaHelper(
+    #         grafana_server_address=self.config['server_address'],
+    #         grafana_token=self.config['token'])
+    #     result = helper.get_dashboard_details(slug=mess)
+    #     return {'result': result}
+
+    @botcmd
+    def grafana_render(self, mess, args):
+        """Renders panel to slack"""
         helper = GrafanaHelper(
             grafana_server_address=self.config['server_address'],
             grafana_token=self.config['token'])
-        result = helper.get_dashboard_details(slug=mess)
-        return {'result': result}
+        graphic = helper.render("aws-ec2")
+        image_pack = helper.get_grafana_image(graphic["imageUrl"])
+        stream = self.send_stream_request(mess.frm, open(image_pack["path"], 'r'), name='render.png', stream_type='image/png')
 
     @botcmd
     def grafana_status(self, mess, args):
