@@ -10,6 +10,11 @@ class TestGrafanaHelper(TestCase):
     dashboards = grafanaHelper.get_dashboards()
     self.assertTrue(len(dashboards) >= 0)
 
+  def test_get_dashboards_by_tag(self):
+      grafanaHelper = GrafanaHelper(grafana_server_address=GRAFANA_ENDPOINT, grafana_token=GRAFANA_TOKEN)
+      dashboards = grafanaHelper.get_dashboards(tag="cloudwatch")
+      self.assertTrue(len(dashboards) >= 0)
+
   def test_grafana_dashboards_search(self):
     grafanaHelper = GrafanaHelper(grafana_server_address=GRAFANA_ENDPOINT, grafana_token=GRAFANA_TOKEN)
     dashboards = grafanaHelper.search_dashboards("aws")
