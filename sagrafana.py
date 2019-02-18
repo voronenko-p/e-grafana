@@ -65,7 +65,8 @@ class SaGrafana(BotPlugin):
             grafana_token=self.config['token'])
         graphic = helper.render("aws-ec2")
         image_pack = helper.get_grafana_image(graphic["imageUrl"])
-        stream = self.send_stream_request(mess.frm, open(image_pack["path"], 'rb'), name='render.png', stream_type='image/png')
+        self.send_stream_request(mess.frm, open(image_pack["path"], 'rb'), name='render.png', stream_type='image/png')
+        os.remove(image_pack["path"])
 
     @botcmd
     def grafana_status(self, mess, args):
