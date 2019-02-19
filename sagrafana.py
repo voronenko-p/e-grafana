@@ -59,6 +59,7 @@ class SaGrafana(BotPlugin):
         result = helper.get_dashboard_details(slug)
         return {'dashboard': result}
 
+
     @botcmd
     def grafana_render(self, mess, args):
         """Renders panel to slack"""
