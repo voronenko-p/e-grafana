@@ -48,14 +48,15 @@ class SaGrafana(BotPlugin):
         result = helper.search_dashboards(query=query)
         return {'dashboards': result}
 
-    # @botcmd(template="grafana_debug")
-    # def grafana_dashboard(self, mess, args):
-    #     """Fuzzy find dashboard by string"""
-    #     helper = GrafanaHelper(
-    #         grafana_server_address=self.config['server_address'],
-    #         grafana_token=self.config['token'])
-    #     result = helper.get_dashboard_details(slug=mess)
-    #     return {'result': result}
+    @botcmd(template="grafana_dashboard_details")
+    @arg_botcmd('slug', type=str)  # byslug
+    def grafana_dashboard(self, mess, slug):
+        """Dashboard details"""
+        helper = GrafanaHelper(
+            grafana_server_address=self.config['server_address'],
+            grafana_token=self.config['token'])
+        result = helper.get_dashboard_details(slug)
+        return {'dashboard': result}
 
     @botcmd
     def grafana_render(self, mess, args):
@@ -82,7 +83,6 @@ class SaGrafana(BotPlugin):
         os.remove(image_pack["path"])
         return image_pack
 
-
     @botcmd
     def grafana_status(self, mess, args):
         """Check aliveness of solution"""
@@ -95,3 +95,12 @@ class SaGrafana(BotPlugin):
                                                                    result)
         except Exception as err:
             return "Oops: {0}".format(err)
+
+    # @botcmd(template="grafana_debug")
+    # def grafana_dashboard(self, mess, args):
+    #     """Fuzzy find dashboard by string"""
+    #     helper = GrafanaHelper(
+    #         grafana_server_address=self.config['server_address'],
+    #         grafana_token=self.config['token'])
+    #     result = helper.get_dashboard_details(slug=mess)
+    #     return {'result': result}

@@ -1,9 +1,8 @@
 {% for dashboard in dashboards %}
 
-{{ dashboard["id"] }} / {{ dashboard["uid"] }}
+{{ dashboard["id"] }} {{ dashboard["title"] }} {% for tag in dashboard.tags %}*{{ tag }}*{% if not loop.last %},{% endif %}{% endfor %}
 
-{{ dashboard["title"] }} at {{ dashboard["url"] }}
+_!grafana dashboard {{ dashboard["uri"]|replace('db/', '')}}_
 
-{% for tag in tags %} *{{ tag }}*   {% endfor %} 
 
 {% endfor %}

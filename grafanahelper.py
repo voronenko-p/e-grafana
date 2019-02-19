@@ -21,8 +21,24 @@ class GrafanaHelper(object):
         return result
 
     def get_dashboard_details(self, slug):
-        result = self.call_grafana("dashboards/db/{0}".format(slug))
-        return result
+        dashboard = self.call_grafana("dashboards/db/{0}".format(slug))
+        data = dashboard["dashboard"]
+        if ("rows" not in data) or len(data["rows"]) == 0:
+            if len(data["panels"]) == 0:
+                return "Dashboard empty"
+            else:
+                target_rows = {"rows": [{"panels": data["panels"]}]}
+                dashboard["rows"] = [{"panels": data["panels"]}]
+        else:
+            target_rows = data["rows"]
+        if len(data["templating"]["list"]) > 0:
+            template_map = {}
+            for template in data["templating"]["list"]:
+                if "current" not in template:
+                    continue
+                template_map["$" + template.name] = template["current"]["text"]
+
+        return dashboard
 
     def search_dashboards(self, query):
         result = self.call_grafana(
