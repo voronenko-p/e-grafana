@@ -23,22 +23,29 @@ class GrafanaHelper(object):
     def get_dashboard_details(self, slug):
         dashboard = self.call_grafana("dashboards/db/{0}".format(slug))
         data = dashboard["dashboard"]
+        panels = []
         if ("rows" not in data) or len(data["rows"]) == 0:
             if len(data["panels"]) == 0:
                 return "Dashboard empty"
             else:
-                target_rows = {"rows": [{"panels": data["panels"]}]}
                 dashboard["rows"] = [{"panels": data["panels"]}]
-        else:
-            target_rows = data["rows"]
         if len(data["templating"]["list"]) > 0:
             template_map = {}
             for template in data["templating"]["list"]:
                 if "current" not in template:
                     continue
-                template_map["$" + template.name] = template["current"]["text"]
-
-        return dashboard
+                if "text" in  template["current"]:
+                  template_map["$" + template["name"]] = template["current"]["text"]
+                else:
+                    template_map["$" + template["name"]] = ""
+        panel_number = 0
+        for row in data["rows"]:
+            for panel in row["panels"]:
+                panel["panel_number"] = panel_number
+                panel_number += 1
+                panels.append(panel)
+        data["allpanels"] = panels
+        return data
 
     def search_dashboards(self, query):
         result = self.call_grafana(
@@ -93,9 +100,7 @@ class GrafanaHelper(object):
             if len(data["panels"]) == 0:
                 return "Dashboard empty"
             else:
-                target_rows = {"rows": [{"panels": data["panels"]}]}
-        else:
-            target_rows = data["rows"]
+                data["rows"] = [{"panels": data["panels"]}]
         if len(data["templating"]["list"]) > 0:
             template_map = {}
             for template in data["templating"]["list"]:
@@ -108,7 +113,7 @@ class GrafanaHelper(object):
                         template_map[
                             "$" + template.name] = template["current"]["text"]
         panel_number = 0
-        for row in target_rows["rows"]:
+        for row in data["rows"]:
             for panel in row["panels"]:
                 panel_number += 1
                 # Skip if visual panel ID was specified and didn't match
