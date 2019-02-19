@@ -27,8 +27,7 @@ class SaGrafana(BotPlugin):
         result = helper.get_dashboards()
         return {'dashboards': result}
 
-    @botcmd(template='grafana_dashboards_list')
-    @arg_botcmd('tag', type=str)  # bytag
+    @arg_botcmd('tag', type=str, template='grafana_dashboards_list')  # bytag
     def grafana_dashboards_bytag(self, mess, tag):
         """List of dashboards by tag"""
         helper = GrafanaHelper(
@@ -38,8 +37,7 @@ class SaGrafana(BotPlugin):
         result = helper.get_dashboards(tag=tag)
         return {'dashboards': result}
 
-    @botcmd(template='grafana_dashboards_list')
-    @arg_botcmd('query', type=str)  # bytag
+    @arg_botcmd('query', type=str, template='grafana_dashboards_list')  # bytag
     def grafana_dashboards_query(self, mess, query):
         """Fuzzy find dashboard by string"""
         helper = GrafanaHelper(
@@ -48,8 +46,7 @@ class SaGrafana(BotPlugin):
         result = helper.search_dashboards(query=query)
         return {'dashboards': result}
 
-    @botcmd(template='grafana_dashboard_details')
-    @arg_botcmd('slug', type=str)  # byslug
+    @arg_botcmd('slug', type=str, template='grafana_dashboard_details')  # byslug
     def grafana_dashboard(self, mess, slug):
         """Dashboard details"""
         helper = GrafanaHelper(
