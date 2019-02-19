@@ -43,7 +43,8 @@ class SaGrafana(BotPlugin):
         result = helper.search_dashboards(query=query)
         return {'dashboards': result}
 
-    @arg_botcmd('slug', type=str, template='grafana_dashboard_details')  # byslug
+    @arg_botcmd('slug', type=str,
+                template='grafana_dashboard_details')  # byslug
     def grafana_dashboard(self, mess, slug):
         """Dashboard details"""
         helper = GrafanaHelper(
@@ -51,10 +52,14 @@ class SaGrafana(BotPlugin):
             grafana_token=self.config['token'])
         self.log.info("Getting %s dashboard details" % slug)
         result = helper.get_dashboard_details(slug)
-        return {'dashboard': result}
+        return {
+            'dashboard': result,
+            'slug': slug
+        }
 
     @arg_botcmd('--from', dest='start', type=str)
-    @arg_botcmd('--to', dest='finish', type=str, template="grafana_render_panel")
+    @arg_botcmd('--to', dest='finish', type=str,
+                template="grafana_render_panel")
     def grafana_render(self, mess, start, finish, args):
         """Renders panel to slack"""
         helper = GrafanaHelper(
@@ -64,7 +69,8 @@ class SaGrafana(BotPlugin):
         self.log.info("For period %s - %s" % (start, finish))
         graphic = helper.render("vyacheslav-2-node-stats")
         image_pack = helper.get_grafana_image(graphic["imageUrl"])
-        self.send_stream_request(mess.frm, open(image_pack["path"], 'rb'), name='render.png', stream_type='image/png')
+        self.send_stream_request(mess.frm, open(image_pack["path"], 'rb'),
+                                 name='render.png', stream_type='image/png')
         os.remove(image_pack["path"])
 
     @botcmd
