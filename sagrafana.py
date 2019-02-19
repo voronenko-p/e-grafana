@@ -58,28 +58,32 @@ class SaGrafana(BotPlugin):
             'slug': slug
         }
 
-    @arg_botcmd('target', type=str)
+    @arg_botcmd('parameters', type=str, default="")
+    @arg_botcmd('panel', type=str)
+    @arg_botcmd('dashboard', type=str)
     @arg_botcmd('--from', dest='start', type=str)
     @arg_botcmd('--to', dest='finish', type=str,
-                template="grafana_render_panel")
-    def grafana_render(self, target, start, finish, args):
+                template="grafana_render_panel", unpack_args=False)
+    def grafana_render(self, mess, args):
         """Renders panel to slack"""
+        self.log.info("args %s" % args)
         helper = GrafanaHelper(
             grafana_server_address=self.config['server_address'],
             grafana_token=self.config['token'])
-        self.log.info("Rendering with message %s" % mess)
-        self.log.info("For period %s - %s" % (start, finish))
+        if args.parameters == "-":
+            parameters = ""
+        else:
+            parameters = args["parameters"]
 
-        regex = "([A-Za-z0-9\-\:_]+)(.*)?"
-        matches = re.findall(regex, target)[0]
-        slug = matches[0].strip()
-        tuning_params = matches[1].strip()
-
+        self.log.info(
+            "render(slug=%s, tuning_params='%s', period_from=%s, period_to=%s)" % (
+            "{0}:{1}".format(args.dashboard, args.panel),
+            parameters, args.start, args.finish))
         graphic = helper.render(
-            period_from=start,
-            period_finish=finish,
-            slug=slug,
-            tuning_params=tuning_params
+            slug="{0}:{1}".format(args.dashboard, args.panel),
+            tuning_params=parameters,
+            period_from=args.start,
+            period_to=args.finish
         )
         image_pack = helper.get_grafana_image(graphic["imageUrl"])
         self.send_stream_request(mess.frm, open(image_pack["path"], 'rb'),
