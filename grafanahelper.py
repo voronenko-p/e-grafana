@@ -59,11 +59,11 @@ class GrafanaHelper(object):
         tuning_params = matches[1].strip()
         return self.render(slug, tuning_params)
 
-    def render(self, slug, tuning_params=""):
+    def render(self, slug, tuning_params="", period_from=None, period_to=None):
 
         timespan = {
-            "from": "now-6h",
-            "to": "now"
+            "from": period_from or "now-6h",
+            "to": period_to or "now"
         }
         apiEndpoint = 'dashboard-solo'
         variables = ''
