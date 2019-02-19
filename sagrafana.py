@@ -63,10 +63,25 @@ class SaGrafana(BotPlugin):
         helper = GrafanaHelper(
             grafana_server_address=self.config['server_address'],
             grafana_token=self.config['token'])
-        graphic = helper.render("aws-ec2")
+        self.log.info("Rendering with message %s" % mess)
+        graphic = helper.render("vyacheslav-2-node-stats")
         image_pack = helper.get_grafana_image(graphic["imageUrl"])
         self.send_stream_request(mess.frm, open(image_pack["path"], 'rb'), name='render.png', stream_type='image/png')
         os.remove(image_pack["path"])
+
+    @botcmd(template="grafana_render_panel")
+    def grafana_panel(self, mess, args):
+        """Renders panel to slack"""
+        helper = GrafanaHelper(
+            grafana_server_address=self.config['server_address'],
+            grafana_token=self.config['token'])
+        self.log.info("Rendering with message %s" % mess)
+        graphic = helper.render_raw(mess)
+        image_pack = helper.get_grafana_image(graphic["imageUrl"])
+        self.send_stream_request(mess.frm, open(image_pack["path"], 'rb'), name='render.png', stream_type='image/png')
+        os.remove(image_pack["path"])
+        return image_pack
+
 
     @botcmd
     def grafana_status(self, mess, args):

@@ -2,6 +2,7 @@ import requests
 import json
 from jinja2 import Template
 import urllib.request
+import re
 import tempfile
 
 
@@ -28,7 +29,15 @@ class GrafanaHelper(object):
             "search?type=dash-db&query={0}".format(query))
         return result
 
-    def render(self, slug):
+    def render_raw(self, mess):
+        regex = "(?:!grafana) (?:render) ([A-Za-z0-9\-\:_]+)(.*)?"
+        matches = re.findall(regex, mess)[0]
+        slug = matches[0].strip()
+        tuning_params = matches[1].strip()
+        return self.render(slug, tuning_params)
+
+    def render(self, slug, tuning_params):
+
         timespan = {
             "from": "now-6h",
             "to": "now"
@@ -36,77 +45,104 @@ class GrafanaHelper(object):
         apiEndpoint = 'dashboard-solo'
         variables = ''
         template_params = []
-        visualPanelId = False
+        visual_panel_id = False
         apiPanelId = False
-        pname = False
+        visual_panel_name = False
         imagesize = {
             "width": 1000,
             "height": 500
         }
+        variables = ""
+
+        # Check if we have any extra fields
+        if tuning_params and tuning_params != '':
+            # The order we apply non-variables in
+            timeFields = ['from', 'to']
+
+            for part in tuning_params.split():
+                variables = "{0}&var-{1}".format(variables, part)
+                template_params.append({ "name": part.split('=')[0], "value": part.split('=')[1]})
+
         parts = slug.split(":")
         if len(parts) > 1:
             slug = parts[0]
-            if parts[1].isDigit():
-                visualPanelId = int(parts[1])
+            if parts[1].isdigit():
+                visual_panel_id = int(parts[1])
             else:
-                pname = parts[1].lower()
+                visual_panel_name = parts[1].lower()
 
         dashboard = self.get_dashboard_details(slug)
-        if not dashboard["dashboard"] or len(
-            dashboard["dashboard"]["rows"]) == 0:
-            return "Dashboard empty"
         data = dashboard["dashboard"]
+        if ("rows" not in data) or len(data["rows"]) == 0:
+            if len(data["panels"]) == 0:
+                return "Dashboard empty"
+            else:
+                target_rows = {"rows": [{"panels": data["panels"]}]}
+        else:
+            target_rows = data["rows"]
         if len(data["templating"]["list"]) > 0:
-            template_map = []
+            template_map = {}
             for template in data["templating"]["list"]:
-                if not "current" in template:
+                if "current" not in template:
                     continue
                 for _param in template_params:
-                    if template.name == _param.name:
-                        template_map["$" + template.name] = _param.value
+                    if template["name"] == _param["name"]:
+                        template_map["$" + template["name"]] = _param["value"]
                     else:
                         template_map[
-                            "$" + template.name] = template.current.text
-        panelNumber = 0
-        for row in data["rows"]:
+                            "$" + template.name] = template["current"]["text"]
+        panel_number = 0
+        for row in target_rows["rows"]:
             for panel in row["panels"]:
-                panelNumber += 1
-            # Skip if visual panel ID was specified and didn't match
-            if visualPanelId and apiPanelId != panel["id"]:
-                continue
-            # Skip if API panel ID was specified and didn't match
-            if apiPanelId and apiPanelId != panel["id"]:
-                continue
+                panel_number += 1
+                # Skip if visual panel ID was specified and didn't match
+                if visual_panel_id and apiPanelId != panel["id"]:
+                    continue
+                # Skip if API panel ID was specified and didn't match
+                if apiPanelId and apiPanelId != panel["id"]:
+                    continue
 
-            if pname and panel["title"].lower().index(pname) == -1:
-                continue
+                if visual_panel_name and panel["title"].lower().find(visual_panel_name) == -1:
+                    continue
 
-            title = self.formatTitleWithTemplate(panel["title"], template_map)
-            #            imageUrl = "#{grafana_host}/render/#{apiEndpoint}/db/#{slug}/
-            # ?panelId=#{panel.id}&width=#{imagesize.width}&height=#{imagesize.height}
-            # &from=#{timespan.from}&to=#{timespan.to}#{variables}"
-            imageUrl = "{0}/render/{1}/db/{2}/?panelId={3}&width={4}&height={5}&from={6}&to={7}{8}".format(
-                self.grafana_server_address,
-                apiEndpoint,
-                slug,
-                panel["id"],
-                imagesize["width"],
-                imagesize["height"],
-                timespan["from"],
-                timespan["to"],
-                variables
-            )
+                title = self.formatTitleWithTemplate(panel["title"], template_map, timespan)
+                #            imageUrl = "#{grafana_host}/render/#{apiEndpoint}/db/#{slug}/
+                # ?panelId=#{panel.id}&width=#{imagesize.width}&height=#{imagesize.height}
+                # &from=#{timespan.from}&to=#{timespan.to}#{variables}"
+                imageUrl = "{0}/render/{1}/db/{2}/?panelId={3}&width={4}&height={5}&from={6}&to={7}{8}".format(
+                    self.grafana_server_address,
+                    apiEndpoint,
+                    slug,
+                    panel["id"],
+                    imagesize["width"],
+                    imagesize["height"],
+                    timespan["from"],
+                    timespan["to"],
+                    variables
+                )
 
-            link = "#{grafana_host}/dashboard/db/#{slug}/?panelId=#{panel.id}&fullscreen&from=#{timespan.from}&to=#{timespan.to}#{variables}"
+                link = "{0}/dashboard/db/{1}/?panelId={2}&width={3}&height={4}&from={5}&to={6}{7}".format(
+                    self.grafana_server_address,
+                    slug,
+                    panel["id"],
+                    imagesize["width"],
+                    imagesize["height"],
+                    timespan["from"],
+                    timespan["to"],
+                    variables
+                )
 
-            return {
-                "imageUrl": imageUrl,
-                "link": link
-            }
+                return {
+                    "title": title,
+                    "imageUrl": imageUrl,
+                    "link": link,
+                    "template_params": template_params,
+                    "timespan": timespan
+                }
+        return {}
 
-    def formatTitleWithTemplate(self, title, template_map):
-        # todo: format title
-        return title
+    def formatTitleWithTemplate(self, title, template_map, timespan):
+        return "{0}  {1}->{2}".format(title, timespan["from"], timespan["to"])
 
     def pretty_dashboards(self, response):
         with open('templates/grafana_dashboards_list.md') as file_:
@@ -135,9 +171,9 @@ class GrafanaHelper(object):
         opener = urllib.request.build_opener()
         opener.addheaders = [
             ("Authorization", "Bearer {0}".format(self.grafana_token))
-            ]
+        ]
         urllib.request.install_opener(opener)
-#        fd, path = tempfile.mkstemp()
+        #        fd, path = tempfile.mkstemp()
         path, headers = urllib.request.urlretrieve(url)
         return {
             "path": path,
