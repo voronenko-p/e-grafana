@@ -18,5 +18,4 @@ _!grafana render {{ dashboard["uri"]|replace('db/', '')}}:{{panel["panel_number"
 _!grafana render {{ dashboard["uri"]|replace('db/', '')}}:SUBSTRING_
 {% endfor %}
 
-{{ dashboard | tojson }}
 

@@ -55,6 +55,7 @@ class SaGrafana(BotPlugin):
         helper = GrafanaHelper(
             grafana_server_address=self.config['server_address'],
             grafana_token=self.config['token'])
+        self.log.info("Getting %s dashboard details" % slug)
         result = helper.get_dashboard_details(slug)
         return {'dashboard': result}
 
