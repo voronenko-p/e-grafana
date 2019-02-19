@@ -18,7 +18,7 @@ class SaGrafana(BotPlugin):
         return {'server_address': 'https://host/grafana',
                 'token': 'eyJrIjoicmNveFpac0tBZm81YzFrMDRNdWVQelRaN3VEOG5tblMiLCJuIjoiZS1ncmFmYW5hIiwiaWQiOjF9'}
 
-    @botcmd(template="grafana_dashboards_list")
+    @botcmd(template='grafana_dashboards_list')
     def grafana_dashboards_list(self, mess, args):
         """List of dashboards"""
         helper = GrafanaHelper(
@@ -27,7 +27,7 @@ class SaGrafana(BotPlugin):
         result = helper.get_dashboards()
         return {'dashboards': result}
 
-    @botcmd(template="grafana_dashboards_list")
+    @botcmd(template='grafana_dashboards_list')
     @arg_botcmd('tag', type=str)  # bytag
     def grafana_dashboards_bytag(self, mess, tag):
         """List of dashboards by tag"""
@@ -38,7 +38,7 @@ class SaGrafana(BotPlugin):
         result = helper.get_dashboards(tag=tag)
         return {'dashboards': result}
 
-    @botcmd(template="grafana_dashboards_list")
+    @botcmd(template='grafana_dashboards_list')
     @arg_botcmd('query', type=str)  # bytag
     def grafana_dashboards_query(self, mess, query):
         """Fuzzy find dashboard by string"""
@@ -48,7 +48,7 @@ class SaGrafana(BotPlugin):
         result = helper.search_dashboards(query=query)
         return {'dashboards': result}
 
-    @botcmd(template="grafana_dashboard_details")
+    @botcmd(template='grafana_dashboard_details')
     @arg_botcmd('slug', type=str)  # byslug
     def grafana_dashboard(self, mess, slug):
         """Dashboard details"""
@@ -71,7 +71,7 @@ class SaGrafana(BotPlugin):
         self.send_stream_request(mess.frm, open(image_pack["path"], 'rb'), name='render.png', stream_type='image/png')
         os.remove(image_pack["path"])
 
-    @botcmd(template="grafana_render_panel")
+    @botcmd(template='grafana_render_panel')
     def grafana_panel(self, mess, args):
         """Renders panel to slack"""
         helper = GrafanaHelper(
