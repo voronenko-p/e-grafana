@@ -59,7 +59,7 @@ class GrafanaHelper(object):
         tuning_params = matches[1].strip()
         return self.render(slug, tuning_params)
 
-    def render(self, slug, tuning_params):
+    def render(self, slug, tuning_params=""):
 
         timespan = {
             "from": "now-6h",

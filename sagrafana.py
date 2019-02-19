@@ -1,9 +1,6 @@
 import os
-import pprint
-from datetime import datetime, timedelta
-
-from errbot import Message, webhook, arg_botcmd
-from errbot import botcmd, BotPlugin
+from datetime import datetime
+from errbot import arg_botcmd, botcmd, BotPlugin
 from grafanahelper import GrafanaHelper
 
 
@@ -56,31 +53,19 @@ class SaGrafana(BotPlugin):
         result = helper.get_dashboard_details(slug)
         return {'dashboard': result}
 
-
-    @botcmd
-    def grafana_render(self, mess, args):
+    @arg_botcmd('--from', dest='start', type=str)
+    @arg_botcmd('--to', dest='finish', type=str, template="grafana_render_panel")
+    def grafana_render(self, mess, start, finish, args):
         """Renders panel to slack"""
         helper = GrafanaHelper(
             grafana_server_address=self.config['server_address'],
             grafana_token=self.config['token'])
         self.log.info("Rendering with message %s" % mess)
+        self.log.info("For period %s - %s" % (start, finish))
         graphic = helper.render("vyacheslav-2-node-stats")
         image_pack = helper.get_grafana_image(graphic["imageUrl"])
         self.send_stream_request(mess.frm, open(image_pack["path"], 'rb'), name='render.png', stream_type='image/png')
         os.remove(image_pack["path"])
-
-    @botcmd(template='grafana_render_panel')
-    def grafana_panel(self, mess, args):
-        """Renders panel to slack"""
-        helper = GrafanaHelper(
-            grafana_server_address=self.config['server_address'],
-            grafana_token=self.config['token'])
-        self.log.info("Rendering with message %s" % mess)
-        graphic = helper.render_raw(mess)
-        image_pack = helper.get_grafana_image(graphic["imageUrl"])
-        self.send_stream_request(mess.frm, open(image_pack["path"], 'rb'), name='render.png', stream_type='image/png')
-        os.remove(image_pack["path"])
-        return image_pack
 
     @botcmd
     def grafana_status(self, mess, args):
@@ -94,12 +79,3 @@ class SaGrafana(BotPlugin):
                                                                    result)
         except Exception as err:
             return "Oops: {0}".format(err)
-
-    # @botcmd(template="grafana_debug")
-    # def grafana_dashboard(self, mess, args):
-    #     """Fuzzy find dashboard by string"""
-    #     helper = GrafanaHelper(
-    #         grafana_server_address=self.config['server_address'],
-    #         grafana_token=self.config['token'])
-    #     result = helper.get_dashboard_details(slug=mess)
-    #     return {'result': result}

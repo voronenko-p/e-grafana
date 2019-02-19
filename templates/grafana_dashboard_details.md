@@ -1,21 +1,22 @@
-id slug title *comma tags * 
+**id**  **slug**       **title**        *comma separated tags*
 
 {{ dashboard["id"] }} {{ dashboard["uri"]|replace('db/', '')}} {{ dashboard["title"] }} {% for tag in dashboard.tags %}*{{ tag }}*{% if not loop.last %},{% endif %}{% endfor %}
 
 Possible params
 
-{% for param in dashboard["templating"]["list] %}
-  {{param["label"]}} {{param["name"]}}
+name label
+{% for param in dashboard["templating"]["list"] %}
+**{{param["name"]}}** _{{param["label"]}}_
 {% endfor %}
+
 
 Panels
 
-number   id  title
+**number**     id     title
 {% for panel in dashboard["allpanels"] %}
-{{ panel["panel_number"] }} {{ panel["id"] }} *{{panel["title"]}}*
-_!grafana render {{ dashboard["uri"]|replace('db/', '')}}:{{panel["panel_number"] }}_
+**{{ panel["panel_number"] }}**   _{{ panel["id"] }}_   "{{panel["title"]}}"
 
-_!grafana render {{ dashboard["uri"]|replace('db/', '')}}:SUBSTRING_
+_!grafana render {{ dashboard["uri"]|replace('db/', '')}}:{{panel["panel_number"] }}_ PARAM=VALUE from=now-6h to=now
+
+_!grafana render {{ dashboard["uri"]|replace('db/', '')}}:TITLEQUERY_  PARAM=VALUE from=now-6h to=now
 {% endfor %}
-
-
