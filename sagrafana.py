@@ -73,7 +73,7 @@ class SaGrafana(BotPlugin):
         if args.parameters == "-":
             parameters = ""
         else:
-            parameters = args["parameters"]
+            parameters = args.parameters
 
         self.log.info(
             "render(slug=%s, tuning_params='%s', period_from=%s, period_to=%s)" % (
