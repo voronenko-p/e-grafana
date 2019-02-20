@@ -3,8 +3,6 @@ import json
 from jinja2 import Template
 import urllib.request
 import re
-import tempfile
-
 
 class GrafanaHelper(object):
 
@@ -121,7 +119,7 @@ class GrafanaHelper(object):
             for panel in row["panels"]:
                 panel_number += 1
                 # Skip if visual panel ID was specified and didn't match
-                if visual_panel_id and apiPanelId != panel["id"]:
+                if visual_panel_id and visual_panel_id != panel["id"]:
                     continue
                 # Skip if API panel ID was specified and didn't match
                 if apiPanelId and apiPanelId != panel["id"]:
@@ -169,7 +167,7 @@ class GrafanaHelper(object):
         return {}
 
     def formatTitleWithTemplate(self, title, template_map, timespan):
-        return "{0}  {1}->{2}".format(title, timespan["from"], timespan["to"])
+        return "{0}  `{1}` to `{2}`".format(title, timespan["from"], timespan["to"])
 
     def pretty_dashboards(self, response):
         with open('templates/grafana_dashboards_list.md') as file_:

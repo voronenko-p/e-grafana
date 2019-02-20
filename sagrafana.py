@@ -89,6 +89,7 @@ class SaGrafana(BotPlugin):
         self.send_stream_request(mess.frm, open(image_pack["path"], 'rb'),
                                  name='render.png', stream_type='image/png')
         os.remove(image_pack["path"])
+        return graphic
 
     @botcmd
     def grafana_status(self, mess, args):

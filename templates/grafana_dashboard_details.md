@@ -14,9 +14,9 @@ Panels
 
 **number**     id     title
 {% for panel in dashboard["allpanels"] %}
-**{{ panel["panel_number"] }}**   _{{ panel["id"] }}_   "{{panel["title"]}}"
+**{{ panel["id"] }}**   "{{panel["title"]}}"
 
-_!grafana render {{ slug }}:{{panel["panel_number"] }}_ PARAM=VALUE from=now-6h to=now
+_!grafana render {{ slug }}:{{panel["id"] }}_ PARAM=VALUE from=now-6h to=now
 
 _!grafana render {{ slug }}:TITLEQUERY_  PARAM=VALUE from=now-6h to=now
 {% endfor %}

@@ -43,7 +43,7 @@ class TestGrafanaHelper(TestCase):
         grafanaHelper = GrafanaHelper(grafana_server_address=GRAFANA_ENDPOINT,
                                       grafana_token=GRAFANA_TOKEN)
         # render(slug=aws-ec2:0, tuning_params='', period_from=None, period_to=None)
-        graphic = grafanaHelper.render(slug="vyacheslav-2-node-stats:0",
+        graphic = grafanaHelper.render(slug="vyacheslav-2-node-stats:1",
                                        tuning_params="server=i-04bb007011e377c88",
                                        period_from=None,
                                        period_to=None)
