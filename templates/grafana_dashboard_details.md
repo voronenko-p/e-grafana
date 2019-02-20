@@ -4,19 +4,19 @@
 
 Possible params
 
-name label
+> name  label
 {% for param in dashboard["templating"]["list"] %}
-**{{param["name"]}}** _{{param["label"]}}_
+> **{{param["name"]}}** _{{param["label"]}}_
 {% endfor %}
 
 
 Panels
 
-**number**     id     title
+**number**     "title"
 {% for panel in dashboard["allpanels"] %}
 **{{ panel["id"] }}**   "{{panel["title"]}}"
 
-_!grafana render {{ slug }}:{{panel["id"] }}_ PARAM=VALUE from=now-6h to=now
+_!grafana render --from=now-6h --to=now {{ slug }}:{{panel["id"] }}_ "PARAM1=VALUE1 PARAM2=VALUE2"
 
-_!grafana render {{ slug }}:TITLEQUERY_  PARAM=VALUE from=now-6h to=now
+_!grafana render  --from=now-6h --to=now {{ slug }}:TITLEQUERY_ "PARAM1=VALUE1 PARAM2=VALUE2" 
 {% endfor %}
