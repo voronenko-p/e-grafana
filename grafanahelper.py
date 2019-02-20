@@ -129,8 +129,7 @@ class GrafanaHelper(object):
                     visual_panel_name) == -1:
                     continue
 
-                title = self.formatTitleWithTemplate(panel["title"],
-                                                     template_map, timespan)
+                title = panel["title"]
                 #            imageUrl = "#{grafana_host}/render/#{apiEndpoint}/db/#{slug}/
                 # ?panelId=#{panel.id}&width=#{imagesize.width}&height=#{imagesize.height}
                 # &from=#{timespan.from}&to=#{timespan.to}#{variables}"
@@ -165,9 +164,6 @@ class GrafanaHelper(object):
                     "timespan": timespan
                 }
         return {}
-
-    def formatTitleWithTemplate(self, title, template_map, timespan):
-        return "{0}  `{1}` to `{2}`".format(title, timespan["from"], timespan["to"])
 
     def pretty_dashboards(self, response):
         with open('templates/grafana_dashboards_list.md') as file_:
