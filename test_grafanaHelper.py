@@ -42,8 +42,11 @@ class TestGrafanaHelper(TestCase):
     def test_render(self):
         grafanaHelper = GrafanaHelper(grafana_server_address=GRAFANA_ENDPOINT,
                                       grafana_token=GRAFANA_TOKEN)
-        graphic = grafanaHelper.render("vyacheslav-2-node-stats",
-                                       "server=i-02ed6d01291ce5260")
+        # render(slug=aws-ec2:0, tuning_params='', period_from=None, period_to=None)
+        graphic = grafanaHelper.render(slug="vyacheslav-2-node-stats:0",
+                                       tuning_params="server=i-04bb007011e377c88",
+                                       period_from=None,
+                                       period_to=None)
         self.assertTrue("imageUrl" in graphic)
         self.assertTrue("link" in graphic)
         image_pack = grafanaHelper.get_grafana_image(graphic["imageUrl"])

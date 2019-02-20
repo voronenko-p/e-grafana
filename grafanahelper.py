@@ -28,14 +28,15 @@ class GrafanaHelper(object):
             if len(data["panels"]) == 0:
                 return "Dashboard empty"
             else:
-                dashboard["rows"] = [{"panels": data["panels"]}]
+                data["rows"] = [{"panels": data["panels"]}]
         if len(data["templating"]["list"]) > 0:
             template_map = {}
             for template in data["templating"]["list"]:
                 if "current" not in template:
                     continue
-                if "text" in  template["current"]:
-                  template_map["$" + template["name"]] = template["current"]["text"]
+                if "text" in template["current"]:
+                    template_map["$" + template["name"]] = template["current"][
+                        "text"]
                 else:
                     template_map["$" + template["name"]] = ""
         panel_number = 0
@@ -83,8 +84,9 @@ class GrafanaHelper(object):
             timeFields = ['from', 'to']
 
             for part in tuning_params.split():
+                name, value = part.split('=')
                 variables = "{0}&var-{1}".format(variables, part)
-                template_params.append({ "name": part.split('=')[0], "value": part.split('=')[1]})
+                template_params.append({"name": name, "value": value})
 
         parts = slug.split(":")
         if len(parts) > 1:
@@ -94,8 +96,7 @@ class GrafanaHelper(object):
             else:
                 visual_panel_name = parts[1].lower()
 
-        dashboard = self.get_dashboard_details(slug)
-        data = dashboard["dashboard"]
+        data = self.get_dashboard_details(slug)
         if ("rows" not in data) or len(data["rows"]) == 0:
             if len(data["panels"]) == 0:
                 return "Dashboard empty"
@@ -110,8 +111,11 @@ class GrafanaHelper(object):
                     if template["name"] == _param["name"]:
                         template_map["$" + template["name"]] = _param["value"]
                     else:
-                        template_map[
-                            "$" + template.name] = template["current"]["text"]
+                        if len(template["current"]) > 0:
+                            template_map[
+                                "$" + template.name] = template["current"][
+                                "text"]
+
         panel_number = 0
         for row in data["rows"]:
             for panel in row["panels"]:
@@ -123,10 +127,12 @@ class GrafanaHelper(object):
                 if apiPanelId and apiPanelId != panel["id"]:
                     continue
 
-                if visual_panel_name and panel["title"].lower().find(visual_panel_name) == -1:
+                if visual_panel_name and panel["title"].lower().find(
+                    visual_panel_name) == -1:
                     continue
 
-                title = self.formatTitleWithTemplate(panel["title"], template_map, timespan)
+                title = self.formatTitleWithTemplate(panel["title"],
+                                                     template_map, timespan)
                 #            imageUrl = "#{grafana_host}/render/#{apiEndpoint}/db/#{slug}/
                 # ?panelId=#{panel.id}&width=#{imagesize.width}&height=#{imagesize.height}
                 # &from=#{timespan.from}&to=#{timespan.to}#{variables}"
